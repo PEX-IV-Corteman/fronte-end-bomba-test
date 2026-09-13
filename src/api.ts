@@ -1,3 +1,6 @@
+import { servicoService } from './application/corteman-services'
+import type { Servico } from './domain/servico'
+
 export type ApiResponse<T> = {
   success: boolean
   message: string
@@ -8,11 +11,7 @@ export type ApiResponse<T> = {
 export type MetodoPagamento = 'PIX' | 'CARTAO' | 'DINHEIRO'
 export type DestinoRetirada = 'PESSOAL' | 'EMPRESA'
 
-export type Servico = {
-  servico_id: string
-  nome_servico: string
-  valor_servico: number | string
-}
+export type { Servico } from './domain/servico'
 
 export type Atendimento = {
   atendimento_id: string
@@ -55,8 +54,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 const json = (method: 'POST' | 'PUT', body: unknown): RequestInit => ({ method, body: JSON.stringify(body) })
 
 export const api = {
-  listServicos: () => request<Servico[]>('/servicos'),
-  createServico: (data: Pick<Servico, 'nome_servico' | 'valor_servico'>) => request<Servico>('/servicos', json('POST', data)),
+  listServicos: () => servicoService.list(),
+  createServico: (data: Pick<Servico, 'nome_servico' | 'valor_servico'>) => servicoService.create(data),
   updateServico: (id: string, data: Partial<Pick<Servico, 'nome_servico' | 'valor_servico'>>) => request<Servico>(`/servicos/${id}`, json('PUT', data)),
   deleteServico: (id: string) => request<null>(`/servicos/${id}`, { method: 'DELETE' }),
 
